@@ -54,11 +54,11 @@ public class HttpConnection: Connection {
         negotiateUrl.appendPathComponent("negotiate");
 
         httpClient.post(url: negotiateUrl) {httpResponse, error in
-            if error != nil {
-                print(error.debugDescription)
+            if let error = error {
+				Logger.error("Negotiation failed! \(error)")
                 self.startDispatchGroup.leave()
 
-                self.failOpenWithError(error: error!, changeState: true)
+                self.failOpenWithError(error: error, changeState: true)
                 return
             }
 
@@ -91,7 +91,7 @@ public class HttpConnection: Connection {
             }
             else {
                 self.startDispatchGroup.leave()
-                print("HTTP request error. statusCode: \(httpResponse.statusCode)\ndescription: \(String(data: (httpResponse.contents)!, encoding: .utf8)!)")
+				Logger.error("HTTP request error. statusCode: \(httpResponse.statusCode)\ndescription: \(String(data: (httpResponse.contents)!, encoding: .utf8)!)")
                 self.failOpenWithError(error: SignalRError.webError(statusCode: httpResponse.statusCode), changeState: true)
             }
         }

@@ -162,11 +162,11 @@ public class HubConnection: ConnectionDelegate {
                     // no action required for ping messages
                     break;
                 default:
-                    print("Unexpected message")
+					Logger.verbose("Unexpected message")
                 }
             }
         } catch {
-            print(error)
+            Logger.error("Error while receiving data! \(error)")
         }
     }
 
@@ -181,7 +181,7 @@ public class HubConnection: ConnectionDelegate {
                 serverInvocationHandler!.processCompletion(completionMessage: message)
             }
         } else {
-            print("Could not find callback with id \(message.invocationId)")
+			Logger.error("Could not find callback with id \(message.invocationId)")
         }
     }
 
@@ -198,7 +198,7 @@ public class HubConnection: ConnectionDelegate {
                 }
             }
         } else {
-            print("Could not find callback with id \(message.invocationId)")
+			Logger.error("Could not find callback with id \(message.invocationId)")
         }
     }
 
@@ -209,13 +209,11 @@ public class HubConnection: ConnectionDelegate {
             callback = self.callbacks[message.target]
         }
 
-        if callback != nil {
-            Util.dispatchToMainThread {
-                callback!(message.arguments, self.hubProtocol.typeConverter)
-            }
-        } else {
-            print("No handler registered for method \'\(message.target)\'")
-        }
+		if let callback = callback {
+			Util.dispatchToMainThread {
+				callback(message.arguments, self.hubProtocol.typeConverter)
+			}
+		}
     }
 
     fileprivate func hubConnectionDidClose(error: Error?) {

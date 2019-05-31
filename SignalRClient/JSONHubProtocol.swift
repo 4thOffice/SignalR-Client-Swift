@@ -78,7 +78,7 @@ public class JSONHubProtocol: HubProtocol {
             case .Close:
                 return createCloseMessage(message: message)
             default:
-                print("Unsupported messageType: \(messageType)")
+                Logger.verbose("Unsupported messageType: \(messageType)")
             }
         }
 
